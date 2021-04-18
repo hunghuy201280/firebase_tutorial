@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1034980026945",
+    "project_id": "fir-tutorial-d9a35",
+    "storage_bucket": "fir-tutorial-d9a35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034980026945:android:bf2d42d40b366297f774c0",
+        "android_client_info": {
+          "package_name": "com.example.messageapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1034980026945-gc188kaovrbv2v0v5b09vhrm4r2apiek.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.messageapp",
+            "certificate_hash": "5c86d8af53de67390b9a1ff9b56369d1aee7a95b"
+          }
+        },
+        {
+          "client_id": "1034980026945-q0vli5mdrgkqrgj93qimva1pclr3oghh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkv2RQRnKU39t9KxyyiwOuons2tEYM9yI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1034980026945-q0vli5mdrgkqrgj93qimva1pclr3oghh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

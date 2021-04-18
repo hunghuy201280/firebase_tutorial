@@ -20,15 +20,18 @@ public class FriendlyMessage {
     private String text;
     private String name;
     private String photoUrl;
-    private Boolean isYou;
+    private String messageID;
+
+
 
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl) {
+    public FriendlyMessage(String text, String name, String photoUrl,String messageID) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
+        this.messageID=messageID;
     }
 
 
@@ -57,11 +60,18 @@ public class FriendlyMessage {
         this.photoUrl = photoUrl;
     }
 
-    public Boolean getYou() {
-        return isYou;
+    public Boolean getYou(String currentName) {
+
+        return name.equals(currentName);
     }
 
-    public void setYou(Boolean you) {
-        isYou = you;
+
+
+    public String getMessageID() {
+        return messageID;
+    }
+
+    public void setMessageID(String messageID) {
+        this.messageID = messageID;
     }
 }
