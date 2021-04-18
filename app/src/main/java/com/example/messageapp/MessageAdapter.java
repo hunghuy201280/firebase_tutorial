@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -30,9 +29,7 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
     private FirebaseAuth mFirebaseAuth;
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        /*if (convertView == null) {
-            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message_left, parent, false);
-        }*/
+
         if (this.getItemViewType(position) == LAYOUT_LEFT)
         {
             // TODO Build the appropriate view
@@ -49,19 +46,7 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
 
         FriendlyMessage message = getItem(position);
 
-/*
-        if(mFirebaseAuth.getCurrentUser()!=null &&message.getYou(mFirebaseAuth.getCurrentUser().getDisplayName()))
-        {
-            setLayoutRight(photoImageView,messageTextView,authorTextView);
-        }
-        else if(mFirebaseAuth.getCurrentUser()==null && message.getName().equals("anonymous"))
-        {
-            setLayoutRight(photoImageView,messageTextView,authorTextView);
-        }
-        else
-        {
-            setLayoutLeft(photoImageView,messageTextView,authorTextView);
-        }*/
+
         boolean isPhoto = message.getPhotoUrl() != null;
         if (isPhoto) {
             messageTextView.setVisibility(View.GONE);
@@ -99,32 +84,7 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
 
         return LAYOUT_LEFT;
     }
-  /*  private void setLayoutRight(ImageView photoImageView, TextView messageTextView, TextView authorTextView)
-    {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)photoImageView.getLayoutParams();
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        photoImageView.setLayoutParams(params);
 
-        RelativeLayout.LayoutParams params1 = (RelativeLayout.LayoutParams)messageTextView.getLayoutParams();
-        params1.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        messageTextView.setLayoutParams(params1);
-        RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams)authorTextView.getLayoutParams();
-        params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        authorTextView.setLayoutParams(params2);
-    }
-    private void setLayoutLeft(ImageView photoImageView, TextView messageTextView, TextView authorTextView)
-    {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)photoImageView.getLayoutParams();
-        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        photoImageView.setLayoutParams(params);
-
-        RelativeLayout.LayoutParams params1 = (RelativeLayout.LayoutParams)messageTextView.getLayoutParams();
-        params1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        messageTextView.setLayoutParams(params1);
-        RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams)authorTextView.getLayoutParams();
-        params2.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        authorTextView.setLayoutParams(params2);
-    }*/
     public Integer findMessageWithID(String messageID)
     {
         Optional<FriendlyMessage> result = FriendlyMessages.stream()
