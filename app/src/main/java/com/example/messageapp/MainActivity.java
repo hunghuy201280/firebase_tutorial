@@ -53,11 +53,13 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -82,17 +84,17 @@ public class MainActivity extends AppCompatActivity {
     private EditText mMessageEditText;
     private Button mSendButton;
     private Context mContext = MainActivity.this;
-    //TODO: storage 1
+    //TODO: storage 1 tạo instance
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mChatPhotosStorageReference;
 
     private String mUsername;
-    //TODO: Bonus 1
+    //TODO: auth 1 tạo instance
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
 
-    //TODO 1: create instance
+    //TODO 1: tạo instance
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessageRef;
     private ChildEventListener mChildEventListener;
@@ -101,21 +103,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //TODO: storage 2
+        //TODO: storage 2 khởi tạo và ref tới firebase storage database
         mFirebaseStorage=FirebaseStorage.getInstance();
         mChatPhotosStorageReference=mFirebaseStorage.getReference().child("chat_photos");
-        //TODO: Bonus2
+        //TODO: auth 2 khởi tạo instance
         mFirebaseAuth = FirebaseAuth.getInstance();
         //
 
 
-        //TODO 2: init instance
+        //TODO 2: khởi tạo instance
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mMessageRef = mFirebaseDatabase.getReference().child("messages");
-        //
+
         mUsername = ANONYMOUS;
 
         //region init
@@ -163,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
         //endregion
 
-        //TODO 4: add child event lisener for DatabaseReference
+        //TODO 4: add child event lisener cho DatabaseReference
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -196,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
         mMessageRef.addChildEventListener(mChildEventListener);
         //
 
+        //TODO: auth 3 tạo AuthStateListener cho FirebaseAuth
         //region auth
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -211,14 +217,16 @@ public class MainActivity extends AppCompatActivity {
         };
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         //endregion
-        // Send button sends a message and clears the EditText
+
+        // SendButton up data lên database, clear edit text
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO 3: Send messages on click
+                // TODO 3: Up message lên database khi click vào send button
                 String key = mMessageRef.push().getKey();
                 if (key != null) {
-                    FriendlyMessage messageToSave = new FriendlyMessage(mMessageEditText.getText().toString().trim(), mUsername, null, key);
+                    FriendlyMessage messageToSave = new FriendlyMessage(mMessageEditText.getText().toString().trim()
+                            , mUsername, null, key);
                     mMessageRef.child(key).setValue(messageToSave);
                 }
                 // Clear input box
@@ -243,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(mContext, "Already Signed In", Toast.LENGTH_LONG).show();
                     return true;
                 }
+                //TODO: auth 4 bắt đầu activity đăng nhập
                 startActivityForResult(
                         AuthUI.getInstance()
                                 .createSignInIntentBuilder()
@@ -321,23 +330,16 @@ public class MainActivity extends AppCompatActivity {
 
             // upload file lên firebase storage
             photoRef.putFile(selectedImageUri)
-                    .addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    //Lấy uri của image khi đã upload thành công lên firebase storage
-                                    Uri downloadUrl = uri;
+                    .addOnSuccessListener(this, taskSnapshot -> photoRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        //Lấy uri của image khi đã upload thành công lên firebase storage
+                        Uri downloadUrl = uri;
 
-                                    // set photo uri lên firebase database
-                                    String key=mMessageRef.push().getKey();
-                                    FriendlyMessage friendlyMessage = new FriendlyMessage(null, mUsername, downloadUrl.toString(),key);
-                                    mMessageRef.child(key).setValue(friendlyMessage);
+                        // set photo uri lên firebase database
+                        String key=mMessageRef.push().getKey();
+                        FriendlyMessage friendlyMessage = new FriendlyMessage(null, mUsername, downloadUrl.toString(),key);
+                        mMessageRef.child(key).setValue(friendlyMessage);
 
-                                }
-                            });
-                        }
-                    });
+                    }));
         }
 
     }

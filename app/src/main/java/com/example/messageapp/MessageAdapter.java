@@ -32,7 +32,7 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
 
         if (this.getItemViewType(position) == LAYOUT_LEFT)
         {
-            // TODO Build the appropriate view
+           
             convertView =((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message_left, parent, false);;
         }
         else if(this.getItemViewType(position) == LAYOUT_RIGHT)
