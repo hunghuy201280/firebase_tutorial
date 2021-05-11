@@ -70,6 +70,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    //region create var
     private static final String TAG = "MainActivity";
 
     public static final String ANONYMOUS = "anonymous";
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText mMessageEditText;
     private Button mSendButton;
     private Context mContext = MainActivity.this;
+    //endregion
     //TODO: storage 1 tạo instance
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mChatPhotosStorageReference;
@@ -108,21 +110,6 @@ public class MainActivity extends AppCompatActivity {
          
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //TODO: storage 2 khởi tạo và ref tới firebase storage database
-        mFirebaseStorage=FirebaseStorage.getInstance();
-        mChatPhotosStorageReference=mFirebaseStorage.getReference().child("chat_photos");
-        //TODO: auth 2 khởi tạo instance
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        //
-
-
-        //TODO 2: khởi tạo instance
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mMessageRef = mFirebaseDatabase.getReference().child("messages");
-
-        mUsername = ANONYMOUS;
-
         //region init
         // Initialize references to views
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -168,6 +155,37 @@ public class MainActivity extends AppCompatActivity {
         mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
         //endregion
 
+        //TODO: storage 2 khởi tạo và ref tới firebase storage database
+        mFirebaseStorage=FirebaseStorage.getInstance();
+        mChatPhotosStorageReference=mFirebaseStorage.getReference().child("chat_photos");
+        //TODO: auth 2 khởi tạo instance
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        //
+
+
+        //TODO 2: khởi tạo instance
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mMessageRef = mFirebaseDatabase.getReference().child("messages");
+
+        mUsername = ANONYMOUS;
+
+
+        // SendButton up data lên database, clear edit text
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO 3: Up message lên database khi click vào send button
+                String key = mMessageRef.push().getKey();
+                if (key != null) {
+                    FriendlyMessage messageToSave = new FriendlyMessage(mMessageEditText.getText().toString().trim()
+                            , mUsername, null, key);
+                    mMessageRef.child(key).setValue(messageToSave);
+                }
+                // Clear input box
+                mMessageEditText.setText("");
+            }
+        });
+
         //TODO 4: add child event lisener cho DatabaseReference
         mChildEventListener = new ChildEventListener() {
             @Override
@@ -183,16 +201,14 @@ public class MainActivity extends AppCompatActivity {
                 mMessageAdapter.notifyDataSetChanged();
                 mMessageListView.setSelection(mMessageListView.getCount() - 1);
             }
-
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
             }
-
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-            }
 
+            }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
@@ -200,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
 
         mMessageRef.addChildEventListener(mChildEventListener);
         //
-
         //TODO: auth 3 tạo AuthStateListener cho FirebaseAuth
         //region auth
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -218,21 +233,7 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         //endregion
 
-        // SendButton up data lên database, clear edit text
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO 3: Up message lên database khi click vào send button
-                String key = mMessageRef.push().getKey();
-                if (key != null) {
-                    FriendlyMessage messageToSave = new FriendlyMessage(mMessageEditText.getText().toString().trim()
-                            , mUsername, null, key);
-                    mMessageRef.child(key).setValue(messageToSave);
-                }
-                // Clear input box
-                mMessageEditText.setText("");
-            }
-        });
+
     }
 
     @Override
@@ -291,22 +292,17 @@ public class MainActivity extends AppCompatActivity {
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                     mMessageAdapter.add(snapshot.getValue(FriendlyMessage.class));
                 }
-
                 @Override
                 public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                     FriendlyMessage updatedMessage = snapshot.getValue(FriendlyMessage.class);
                     mMessageAdapter.updateItem(mMessageAdapter.findMessageWithID(snapshot.getKey()), updatedMessage);
                     mMessageAdapter.notifyDataSetChanged();
                 }
-
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
                 }
-
                 @Override
                 public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
                 }
 
                 @Override
